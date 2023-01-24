@@ -38,7 +38,7 @@ export default function CustomDrawer({ ...props }) {
             height: 200,
             borderBottomColor: '#ccc',
             borderBottomWidth: 1,
-            backgroundColor: '#0a9f9f4a',
+            backgroundColor: '#00AEEF',
             marginTop: -6,
           }}>
           <View
@@ -54,8 +54,9 @@ export default function CustomDrawer({ ...props }) {
                 style={{
                   height: 100,
                   width: 100,
-                  backgroundColor: 'cyan',
+                  backgroundColor: '#D1D3D4',
                   borderRadius: 50,
+                  color: 'white',
                   //   borderWidth: 1,
                 }}></View>
               <Text style={{ fontSize: 18, fontWeight: 'bold' }}>

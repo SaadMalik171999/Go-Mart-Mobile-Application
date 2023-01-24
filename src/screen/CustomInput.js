@@ -7,20 +7,19 @@ import {
   BackHandler,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { Colors, TextInput, Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+import {Colors, TextInput, Button} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
-const { width } = Dimensions.get('screen');
+import {useSelector} from 'react-redux';
+const {width} = Dimensions.get('screen');
 const cardWidth = width;
 
-const CustomInput = ({ imageResponse }) => {
+const CustomInput = ({imageResponse}) => {
   const navigation = useNavigation();
 
-  const myData = useSelector(state => state.productInfo)
-
+  const myData = useSelector(state => state.productInfo);
 
   const [inputs, setInputs] = useState([]);
   const [searchProducts, setSearchProducts] = useState([]);
@@ -28,7 +27,7 @@ const CustomInput = ({ imageResponse }) => {
   const addHandler = () => {
     const input = [];
     imageResponse?.map((value, index) => {
-      console.log(value)
+      console.log(value);
       input.push({
         key: index,
         value: value,
@@ -37,7 +36,7 @@ const CustomInput = ({ imageResponse }) => {
 
     setInputs(input);
 
-    console.log(input)
+    console.log(input);
   };
 
   const deleteHandler = key => {
@@ -56,22 +55,22 @@ const CustomInput = ({ imageResponse }) => {
     const manualInput = [...inputs];
     manualInput.push({
       key: 0,
-      value: "",
+      value: '',
     });
     setInputs(manualInput);
-  }
+  };
 
   const backAction = () => {
     navigation.navigate('DashBoard');
-    return true
+    return true;
   };
 
   useEffect(() => {
     addHandler();
-    console.log("HIIII")
+    console.log('HIIII');
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
 
     return () => {
@@ -80,7 +79,7 @@ const CustomInput = ({ imageResponse }) => {
     };
   }, []);
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
         <View
           style={{
@@ -89,7 +88,7 @@ const CustomInput = ({ imageResponse }) => {
           <Text
             style={{
               marginHorizontal: 15,
-              color: '#054f4f',
+              color: '#1C75BC',
               fontSize: 18,
               fontFamily: 'sans-serif-condensed',
               fontWeight: '700',
@@ -115,8 +114,8 @@ const CustomInput = ({ imageResponse }) => {
                     mode="outlined"
                     theme={{
                       colors: {
-                        primary: '#054f4f',
-                        underlineColor: '#054f4f',
+                        primary: '#1C75BC',
+                        underlineColor: '#1C75BC',
                         background: 'white',
                       },
                       roundness: 10,
@@ -132,13 +131,12 @@ const CustomInput = ({ imageResponse }) => {
                     }}
                     onPress={() => deleteHandler(key)}>
                     <View>
-                      <Icon name="delete-outline" size={30} color="#054f4f" />
+                      <Icon name="delete-outline" size={30} color="#1C75BC" />
                     </View>
                   </TouchableOpacity>
                 </View>
               );
             })
-
           ) : (
             <View>
               <Text
@@ -152,12 +150,11 @@ const CustomInput = ({ imageResponse }) => {
               </Text>
             </View>
           )}
-
         </View>
         {inputs.length > 0 ? (
           <Button
             style={{
-              backgroundColor: '#054f4f',
+              backgroundColor: '#1C75BC',
               borderRadius: 30,
               width: '50%',
               alignSelf: 'center',
@@ -165,27 +162,30 @@ const CustomInput = ({ imageResponse }) => {
             }}
             mode="contained"
             onPress={() => {
-              const data = []
+              const data = [];
 
-              inputs.map((values)=>{
-                console.log(values.value)
-                data.push(values.value)
-              })
-    
-              let searchProductData = []
-              for(let i = 0; i < data.length; i++){
-                console.log(data.length)
-                 myData.data.filter(item => {
-                 if(item.productName.toLowerCase().indexOf(data[i].toLowerCase()) > -1){
+              inputs.map(values => {
+                console.log(values.value);
+                data.push(values.value);
+              });
 
-                   searchProductData = [...searchProductData , item]
-                 }
-                })
+              let searchProductData = [];
+              for (let i = 0; i < data.length; i++) {
+                console.log(data.length);
+                myData.data.filter(item => {
+                  if (
+                    item.productName
+                      .toLowerCase()
+                      .indexOf(data[i].toLowerCase()) > -1
+                  ) {
+                    searchProductData = [...searchProductData, item];
+                  }
+                });
               }
 
-              console.log(data)
-              console.log(searchProductData)
-              navigation.navigate('AllSearchProducts', searchProductData)
+              console.log(data);
+              console.log(searchProductData);
+              navigation.navigate('AllSearchProducts', searchProductData);
             }}>
             Search Product
           </Button>
@@ -201,41 +201,37 @@ const CustomInput = ({ imageResponse }) => {
             borderRadius: 15,
             padding: 10,
             width: cardWidth - 50,
-          }}
-        >
+          }}>
           <Text
             style={{
               fontWeight: '700',
-              color: '#054f4f',
+              color: '#1C75BC',
               fontSize: 16,
               // backgroundColor: 'red',
-              marginBottom: 7
-
-            }}
-          >Add Products Manually:</Text>
+              marginBottom: 7,
+            }}>
+            Add Products Manually:
+          </Text>
           <Button
             style={{
               width: '20%',
               alignSelf: 'center',
               borderWidth: 1,
-              borderColor: '#054f4f',
+              borderColor: '#1C75BC',
               borderRadius: 10,
-
             }}
             mode="Outlined"
-            color="#054f4f"
+            color="#1C75BC"
             onPress={() => {
               addManually();
             }}>
             ADD
           </Button>
-
         </View>
       </View>
     </SafeAreaView>
   );
-}
-
+};
 
 export default CustomInput;
 const styles = StyleSheet.create({

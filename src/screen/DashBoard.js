@@ -16,85 +16,105 @@ import {
   TouchableHighlight,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TopSearchBar from '../components/TopSearchBar';
-import { FloatingAction } from 'react-native-floating-action';
+import {FloatingAction} from 'react-native-floating-action';
 import FloatingButton from '../components/FloatingButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppStatusBar from '../components/AppStatusBar';
 import Swiper from 'react-native-swiper';
-const { width } = Dimensions.get('screen');
-import { useScanListMutation } from '../services/userAuthentication';
-import { useAllProductQuery } from '../services/userAuthentication';
+const {width} = Dimensions.get('screen');
+import {useScanListMutation} from '../services/userAuthentication';
+import {useAllProductQuery} from '../services/userAuthentication';
 const cardWidth = width / 3 - 20;
 const searchInputWidth = width / 1.4;
-import { foods } from '../utils/food';
-import { useDispatch, useSelector } from 'react-redux'
-import { setProductInformation } from '../features/api/productReducerSlice'
-import { categories } from '../utils/categories';
-import Loader from '../components/Loader/loader'
+import {foods} from '../utils/food';
+import {useDispatch, useSelector} from 'react-redux';
+import {setProductInformation} from '../features/api/productReducerSlice';
+import {categories} from '../utils/categories';
+import Loader from '../components/Loader/loader';
 import useIsLoading from '../hooks/useIsLoader';
-import { interpolate } from 'react-native-reanimated';
+import {interpolate} from 'react-native-reanimated';
 import axios from 'axios';
-import { baseURl } from '../utils/base_URL';
+import {baseURl} from '../utils/base_URL';
 
-export default function DashBoard({ navigation }) {
-  const allProductState = useSelector(state => state.productInfo)
+export default function DashBoard({navigation}) {
+  const allProductState = useSelector(state => state.productInfo);
 
-  const [loader, showLoader, hideLoader] = useIsLoading()
+  const [loader, showLoader, hideLoader] = useIsLoading();
   const [searchText, setSearchText] = useState('');
-  const [productData, setProductData] = useState([])
-  const [productCategory, setProductCategories] = useState([])
+  const [productData, setProductData] = useState([]);
+  const [productCategory, setProductCategories] = useState([]);
 
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   // const { data, error, isLoading, isSuccess } = useAllProductQuery();
-
+  const getDataToModel = async () => {
+    try {
+      showLoader();
+      const response = await axios.post(`${baseURl}allproductlist`,{
+        "Content-Type": "application/json", Accept: "application/json"
+      });
+      if (response) {
+        console.log(response);
+      }
+      // hideLoader();
+    } catch (error) {
+      console.log(error);
+      return (
+        <>
+          <Text>Something Went Wrong</Text>
+        </>
+      );
+    }
+  };
 
   const getData = async () => {
     try {
-      showLoader()
-      const response = await axios.get(`${baseURl}product`)
+      showLoader();
+      const response = await axios.get(`${baseURl}finalproduct`,{
+        "Content-Type": "application/json", Accept: "application/json"
+      });
       if (response) {
         // console.log(response.data)
-        dispatch(setProductInformation({ data: response.data }))
-        setProductData(response.data)
-        let categories = []
-        let duplicate = []
-        response.data?.map((category) => {
+        dispatch(setProductInformation({data: response.data}));
+        setProductData(response.data);
+        let categories = [];
+        let duplicate = [];
+        response.data?.map(category => {
           if (!duplicate.includes(category.productCategory)) {
             duplicate.push(category.productCategory);
-            categories.push({ category: category.productCategory, image: category.productImage });
-
+            categories.push({
+              category: category.productCategory,
+              image: category.productImage,
+            });
           }
-        })
-        setProductCategories(categories)
+        });
+        setProductCategories(categories);
       }
-      hideLoader()
+      hideLoader();
     } catch (error) {
-      console.log(error)
-      return <><Text>Something Went Wrong</Text></>
+      console.log(error);
+      return (
+        <>
+          <Text>Something Went Wrong</Text>
+        </>
+      );
     }
-  }
-
-
-
-
-
-
+  };
 
   const backAction = () => {
-    BackHandler.exitApp()
+    BackHandler.exitApp();
     return true;
   };
 
   useEffect(() => {
-    getData()
+    getDataToModel();
+    getData();
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
     return () => backHandler.remove();
   }, []);
@@ -103,16 +123,14 @@ export default function DashBoard({ navigation }) {
     navigation.openDrawer();
   };
 
-
-
   const actions = [
     {
       text: 'Use Camera',
       icon: <Ionicons name="camera-outline" size={20} color="white" />,
       name: 'use_Camera',
       position: 2,
-      color: '#054f4f',
-      textColor: '#054f4f',
+      color: '#1C75BC',
+      textColor: '#1C75BC',
       textElevation: 10,
     },
     {
@@ -120,17 +138,16 @@ export default function DashBoard({ navigation }) {
       icon: <Ionicons name="image-outline" size={20} color="white" />,
       name: 'use_Gallery',
       position: 1,
-      color: '#054f4f',
-      textColor: '#054f4f',
+      color: '#1C75BC',
+      textColor: '#1C75BC',
       textElevation: 10,
     },
   ];
 
   const [FloatingButtonText, setFloatingButtonText] = useState('SCAN');
 
-  const ListCategories = ({ product }) => {
+  const ListCategories = ({product}) => {
     const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(false);
-
 
     return (
       <ScrollView
@@ -142,25 +159,29 @@ export default function DashBoard({ navigation }) {
             key={index}
             activeOpacity={0.8}
             onPress={() => {
-              let categoryData = []
-              allProductState.data?.map((data) => {
-                if (data.productCategory === "All") {
-                  categoryData.push(data)
+              let categoryData = [];
+              allProductState.data?.map(data => {
+                if (data.productCategory === 'All') {
+                  categoryData.push(data);
+                } else if (data.productCategory === category.category) {
+                  categoryData.push(data);
                 }
-                else if (data.productCategory === category.category) {
-                  categoryData.push(data)
-                }
-              })
-              setProductData(categoryData)
+              });
+              setProductData(categoryData);
             }}>
             <View
               style={{
                 ...style.categoryBtn,
-                backgroundColor: productData.length > 0 ? (productData[0].productCategory == category.category ? '#125858' : '#82a7a7') : (null)
+                backgroundColor:
+                  productData.length > 0
+                    ? productData[0].productCategory == category.category
+                      ? '#1C75BC'
+                      : '#00AEEF'
+                    : null,
               }}>
               <View style={style.categoryBtnImgCon}>
                 <Image
-                  source={{ uri: category.image }}
+                  source={{uri: category.image}}
                   style={{
                     height: 35,
                     width: 35,
@@ -174,7 +195,12 @@ export default function DashBoard({ navigation }) {
                   fontSize: 15,
                   fontWeight: 'bold',
                   marginLeft: 10,
-                  color: productData.length > 0 ? (productData[0].productCategory == category.category ? 'white' : 'black') : (null)
+                  color:
+                    productData.length > 0
+                      ? productData[0].productCategory == category.category
+                        ? 'white'
+                        : 'black'
+                      : null,
                 }}>
                 {category.category}
               </Text>
@@ -185,22 +211,26 @@ export default function DashBoard({ navigation }) {
     );
   };
 
-  const Card = ({ product }) => {
+  const Card = ({product}) => {
     return (
       <TouchableHighlight
         underlayColor="white"
         activeOpacity={0.9}
         onPress={() => navigation.navigate('AboutItem', product)}>
         <View style={style.card}>
-          <View style={{ alignItems: 'center', top: -20 }}>
+          <View style={{alignItems: 'center', top: -20}}>
             <Image
-              source={{ uri: product.productImage }}
-              style={{ height: 80, width: 80, borderRadius: 80 / 2 }}
+              source={{uri: product.productImage}}
+              style={{height: 80, width: 80, borderRadius: 80 / 2}}
             />
           </View>
-          <View style={{ marginHorizontal: 10 }}>
-            <Text numberOfLines={2} style={{ fontSize: 14, fontWeight: 'bold' , textAlign:'center'}}>{product.productName}</Text>
-            <Text style={{ fontSize: 12, color: 'grey', textAlign:'center' }}>
+          <View style={{marginHorizontal: 10}}>
+            <Text
+              numberOfLines={2}
+              style={{fontSize: 14, fontWeight: 'bold', textAlign: 'center'}}>
+              {product.productName}
+            </Text>
+            <Text style={{fontSize: 12, color: 'grey', textAlign: 'center'}}>
               {product.productCategory}
             </Text>
           </View>
@@ -216,13 +246,12 @@ export default function DashBoard({ navigation }) {
           </View>
         </View>
       </TouchableHighlight>
-    )
-
+    );
   };
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <AppStatusBar
           backgroundColor={
             FloatingButtonText === 'SCAN' ? 'white' : '#00000099'
@@ -235,80 +264,78 @@ export default function DashBoard({ navigation }) {
           <View style={style.inputContainer}>
             <Icon name="search" size={20} />
             <TextInput
-              style={{ flex: 1, fontSize: 18 }}
+              style={{flex: 1, fontSize: 18}}
               placeholder="Search grocery"
               onChangeText={text => {
                 let tempData = allProductState.data.filter(item => {
-                  return item.productName.toLowerCase().indexOf(text.toLowerCase()) > -1
-                })
+                  return (
+                    item.productName.toLowerCase().indexOf(text.toLowerCase()) >
+                    -1
+                  );
+                });
                 setSearchText(text);
-                setProductData(tempData)
+                setProductData(tempData);
               }}
               value={searchText}
             />
             {searchText ? (
-              <TouchableOpacity onPress={() => {
-                setProductData(allProductState.data)
-                setSearchText('')
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setProductData(allProductState.data);
+                  setSearchText('');
+                }}>
                 <View>
                   <Ionicons
                     name="md-close-circle-sharp"
                     size={20}
-                    color="#054f4f"
+                    color="#1C75BC"
                   />
                 </View>
               </TouchableOpacity>
             ) : null}
           </View>
-          <View style={{ marginLeft: 5 }}>
+          <View style={{marginLeft: 5}}>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Cart');
                 // navigation.navigate('AllSearchProducts');
               }}>
               <View>
-                <Ionicons name="cart-outline" size={30} color="#054f4f" />
+                <Ionicons name="cart-outline" size={30} color="#1C75BC" />
               </View>
             </TouchableOpacity>
           </View>
         </View>
 
-
         {searchText ? (
           <React.Fragment>
-
-            <View style={{ marginLeft: 20, marginTop: 0 }}>
+            <View style={{marginLeft: 20, marginTop: 0}}>
               <View>
                 {productData.length > 0 ? (
-
-                  <Text style={{ fontSize: 18 }}>
-                    Search For  <Text style={{ color: '#054f4f' }}>{searchText}</Text>
+                  <Text style={{fontSize: 18}}>
+                    Search For{' '}
+                    <Text style={{color: '#1C75BC'}}>{searchText}</Text>
                   </Text>
                 ) : (
-
-                  <Text style={{ fontSize: 18 }}>
-                    No Product Found:  <Text style={{ color: '#054f4f' }}>{searchText}</Text>
+                  <Text style={{fontSize: 18}}>
+                    No Product Found:{' '}
+                    <Text style={{color: '#1C75BC'}}>{searchText}</Text>
                   </Text>
-                )
-                }
+                )}
               </View>
-              <View>
-
-              </View>
+              <View></View>
             </View>
           </React.Fragment>
-        ) : (null)
-        }
+        ) : null}
 
-        {searchText ? (null) : (
+        {searchText ? null : (
           <React.Fragment>
             <View style={style.sliderContainer}>
               <Swiper
                 autoplay
                 horizontal={false}
                 height={200}
-                activeDotColor="#054f4f">
+                activeDotColor="#1C75BC">
                 <View style={style.slide}>
                   <Image
                     source={require('../assets/images/c1.jpg')}
@@ -342,31 +369,28 @@ export default function DashBoard({ navigation }) {
             <View>
               <ListCategories product={productCategory} />
             </View>
-          </React.Fragment>)
-
-
-        }
-        {loader ? (loader) : (
+          </React.Fragment>
+        )}
+        {loader ? (
+          loader
+        ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={productData}
-            renderItem={({ item, index }) => <Card product={item} />}
+            renderItem={({item, index}) => <Card product={item} />}
             key={'_'}
             keyExtractor={item => '_' + item._id}
             numColumns={3}
           />
-        )
-
-        }
-
+        )}
 
         <FloatingAction
           listenKeyboard={false}
           floatingIcon={
-            <Text style={{ color: 'white' }}>{FloatingButtonText}</Text>
+            <Text style={{color: 'white'}}>{FloatingButtonText}</Text>
           }
           showBackground={true}
-          color="#054f4f"
+          color="#1C75BC"
           actions={actions}
           onOpen={() => {
             setFloatingButtonText('CLOSE');
@@ -386,18 +410,10 @@ export default function DashBoard({ navigation }) {
           //   console.log(`Main Button`);
           // }}
         />
-
-
-
-
       </SafeAreaView>
-
-
     </>
   );
 }
-
-
 
 const style = StyleSheet.create({
   header: {
@@ -450,6 +466,8 @@ const style = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 5,
     flexDirection: 'row',
+    shadowColor: '#000',
+    borderColor: 'gray',
   },
   categoryBtnImgCon: {
     height: 35,

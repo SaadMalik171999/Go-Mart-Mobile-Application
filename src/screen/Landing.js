@@ -60,7 +60,7 @@ export default function Landing() {
         }}>
         <View style={styles.formContainer}>
           <View>
-            <Text style={{textAlign:'center' , color: '#054f4f'}}>
+            <Text style={{textAlign:'center' , color: '#1C75BC'}}>
               Smart Grocery Application
             </Text>
           </View>

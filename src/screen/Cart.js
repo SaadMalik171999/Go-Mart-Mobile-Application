@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,75 +8,75 @@ import {
   BackHandler,
   TouchableOpacity,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import { FlatList } from 'react-native-gesture-handler';
-import { Button } from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {FlatList} from 'react-native-gesture-handler';
+import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { getAllOrder, updateOrder } from '../services/orderLocalStore'
-import { SwipeListView } from 'react-native-swipe-list-view';
+import {getAllOrder, updateOrder} from '../services/orderLocalStore';
+import {SwipeListView} from 'react-native-swipe-list-view';
 
-let updateQty = []
+let updateQty = [];
 
-
-export default function Cart({ navigation }) {
-
-
-  const [cartredItems, setCartedItem] = useState(null)
-  const [totalPrice, setTotalPrice] = useState(0)
+export default function Cart({navigation}) {
+  const [cartredItems, setCartedItem] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const backAction = async () => {
     navigation.goBack();
-    return true
+    return true;
   };
 
-
   const setAllProducts = async () => {
-    let cartItems = await getAllOrder()
-    setCartedItem(cartItems)
-    calculateTotal(cartItems)
-  }
+    let cartItems = await getAllOrder();
+    setCartedItem(cartItems);
+    calculateTotal(cartItems);
+  };
 
   const updateProductQuantity = (newQty, id) => {
-    updateQty = cartredItems.map(q => (
-      q.productId === id ? { ...q, productQuantity: newQty } : q
-    ))
+    updateQty = cartredItems.map(q =>
+      q.productId === id ? {...q, productQuantity: newQty} : q,
+    );
 
+    calculateTotal(updateQty);
+    setCartedItem(updateQty);
+  };
 
-
-    calculateTotal(updateQty)
-    setCartedItem(updateQty)
-  }
-
-  const calculateTotal = (cartItems) => {
-    const amount = cartItems.length && cartItems.map((item) => item.productCompanyPrice * item.productQuantity).reduce((prev, next) => prev + next);
-    setTotalPrice(amount)
-  }
+  const calculateTotal = cartItems => {
+    const amount =
+      cartItems.length &&
+      cartItems
+        .map(item => item.productCompanyPrice * item.productQuantity)
+        .reduce((prev, next) => prev + next);
+    setTotalPrice(amount);
+  };
 
   // const myData = useSelector(state => state.productInfo)
   // console.log(myData)
 
-
   const updateAsync = () => {
-    updateOrder(updateQty)
-  }
+    updateOrder(updateQty);
+  };
 
   useEffect(() => {
-    setAllProducts()
+    setAllProducts();
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
 
     return () => {
-      updateAsync()
-      backHandler.remove()
+      updateAsync();
+      backHandler.remove();
     };
   }, []);
 
-  const CartCard = ({ item }) => {
+  const CartCard = ({item}) => {
     return (
       <View style={style.cartCard}>
-        <Image source={{ uri: item.productImage }} style={{ height: 60, width: 60 }} />
+        <Image
+          source={{uri: item.productImage}}
+          style={{height: 60, width: 60}}
+        />
         <View
           style={{
             height: 100,
@@ -87,18 +87,27 @@ export default function Cart({ navigation }) {
             justifyContent: 'center',
             // backgroundColor: 'green'
           }}>
-          <Text style={{ fontWeight: '700', fontSize: 14 }}>{item.productName}</Text>
-          <Text style={{ fontSize: 12, color: 'grey' }}>{item.productCompanyName}</Text>
+          <Text style={{fontWeight: '700', fontSize: 14}}>
+            {item.productName}
+          </Text>
+          <Text style={{fontSize: 12, color: 'grey'}}>
+            {item.productCompanyName}
+          </Text>
         </View>
 
-        <View style={{ alignItems: 'center', marginLeft: 28 }}>
+        <View style={{alignItems: 'center', marginLeft: 28}}>
           <View style={style.actionContainer}>
             <TouchableOpacity
-              onPress={() => { updateProductQuantity(item.productQuantity - 1, item.productId) }}
+              onPress={() => {
+                updateProductQuantity(item.productQuantity - 1, item.productId);
+              }}
               disabled={item.productQuantity == 1}
               style={[
                 style.actionBtn,
-                { backgroundColor: item.productQuantity > 1 ? '#447b7b' : '#D3D3D3' },
+                {
+                  backgroundColor:
+                    item.productQuantity > 1 ? '#1C75BC' : '#D3D3D3',
+                },
               ]}>
               <View>
                 <Icon name="remove" size={20} color="white" />
@@ -115,14 +124,16 @@ export default function Cart({ navigation }) {
               {item.productQuantity}
             </Text>
             <TouchableOpacity
-              onPress={() => { updateProductQuantity(item.productQuantity + 1, item.productId) }}
-              style={[style.actionBtn, { backgroundColor: '#447b7b' }]}>
+              onPress={() => {
+                updateProductQuantity(item.productQuantity + 1, item.productId);
+              }}
+              style={[style.actionBtn, {backgroundColor: '#1C75BC'}]}>
               <View>
                 <Icon name="add" size={20} color="white" />
               </View>
             </TouchableOpacity>
           </View>
-          <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 10 }}>
+          <Text style={{fontSize: 14, fontWeight: 'bold', marginTop: 10}}>
             Rs {(item.productCompanyPrice * item.productQuantity).toFixed(2)}
           </Text>
         </View>
@@ -130,69 +141,61 @@ export default function Cart({ navigation }) {
     );
   };
 
-
   const cartItemRender = () => {
     return (
       <SwipeListView
         data={cartredItems}
-        keyExtractor={(item) => `${item.productId}`}
+        keyExtractor={item => `${item.productId}`}
         contentContainerStyle={{
           marginTop: 10,
           paddingHorizontal: 10,
-          paddingBottom: 10
+          paddingBottom: 10,
         }}
         disableRightSwipr={true}
         rightOpenValue={-75}
         renderItem={(data, rowMap) => {
-          return (
-            <CartCard item={data.item} />
-          )
+          return <CartCard item={data.item} />;
         }}
         renderHiddenItem={() => {
           return (
-            <View style={{
-              // alignSelf: 'flex-end',
-              // marginLeft: 5,
-              flex: 1,
-              // backgroundColor: 'red',
-              alignItems: 'flex-end',
-              justifyContent: 'center',
-              marginHorizontal: 20,
-
-
-            }}>
-              <TouchableOpacity
-                onPress={() => { }}>
+            <View
+              style={{
+                // alignSelf: 'flex-end',
+                // marginLeft: 5,
+                flex: 1,
+                // backgroundColor: 'red',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                marginHorizontal: 20,
+              }}>
+              <TouchableOpacity onPress={() => {}}>
                 <View>
-                  <Icon name="delete-outline" size={35} color="#054f4f" />
+                  <Icon name="delete-outline" size={35} color="#1C75BC" />
                 </View>
               </TouchableOpacity>
             </View>
-          )
+          );
         }}
       />
-    )
-  }
+    );
+  };
 
   return (
-    <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
+    <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
       <View style={style.header}>
         <Icon name="arrow-back-ios" size={28} onPress={navigation.goBack} />
-        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cart</Text>
+        <Text style={{fontSize: 20, fontWeight: 'bold'}}>Cart</Text>
       </View>
       {cartItemRender()}
 
-      <View style={{
-        height: 150,
-        backgroundColor: '#f2f2f2',
-        alignItems: 'center',
-        maxWidth: '100%',
-        // justifyContent: 'center'
-
-
-
-      }} >
-
+      <View
+        style={{
+          height: 150,
+          backgroundColor: '#f2f2f2',
+          alignItems: 'center',
+          maxWidth: '100%',
+          // justifyContent: 'center'
+        }}>
         <View
           style={{
             // maxWidth: '90%',
@@ -202,29 +205,26 @@ export default function Cart({ navigation }) {
             justifyContent: 'space-around',
             marginVertical: 15,
           }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-            Total Price
+          <Text style={{fontSize: 18, fontWeight: 'bold'}}>Total Price</Text>
+          <Text style={{fontSize: 22, fontWeight: 'bold'}}>
+            Rs. {totalPrice}/-
           </Text>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Rs. {totalPrice}</Text>
         </View>
-        <View style={{ marginHorizontal: 30 }}>
+        <View style={{marginHorizontal: 30}}>
           <Button
             style={{
-              backgroundColor: '#054f4f',
+              backgroundColor: '#1C75BC',
               borderRadius: 30,
-              width: '50%'
+              width: '80%',
             }}
-
             mode="contained"
             onPress={() => {
-
-              console.log("Order Dispatch")
-              navigation.navigate('ProductComparision')
+              console.log('Order Dispatch');
+              navigation.navigate('ProductComparision');
             }}>
-            ADD TO CART
+            Comparison
           </Button>
         </View>
-
       </View>
     </SafeAreaView>
   );

@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Button } from 'react-native-paper';
@@ -99,7 +98,7 @@ export default function ScanList({ navigation, route }) {
         }
       <Button
         style={{
-          // backgroundColor: '#054f4f',
+          // backgroundColor: '#1C75BC',
           borderRadius: 30,
           width: '50%'
         }}

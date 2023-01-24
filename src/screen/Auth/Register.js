@@ -8,19 +8,19 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { Dimensions } from 'react-native';
-import { Formik, Form, Field, ErrorMessage, useFormik } from 'formik';
-import { useNavigation } from '@react-navigation/native';
-import { TextInput, Button } from 'react-native-paper';
+import React, {useState, useEffect} from 'react';
+import {Dimensions} from 'react-native';
+import {Formik, Form, Field, ErrorMessage, useFormik} from 'formik';
+import {useNavigation} from '@react-navigation/native';
+import {TextInput, Button} from 'react-native-paper';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { signUpValidationSchema } from '../../Schema/index';
+import {signUpValidationSchema} from '../../Schema/index';
 import Header from '../../components/login/Header';
 import Toast from 'react-native-toast-message';
-import { toastConfig } from '../../utils/ToastConfig';
-import { storeToken } from '../../services/authorizationToken'
-import { useSignUpMutation } from '../../services/userAuthentication';
+import {toastConfig} from '../../utils/ToastConfig';
+import {storeToken} from '../../services/authorizationToken';
+import {useSignUpMutation} from '../../services/userAuthentication';
 import ModalNative from '../../components/Modal/Modal';
 import LottieView from 'lottie-react-native';
 
@@ -32,65 +32,61 @@ const initialValues = {
 };
 
 export default function Registger() {
-
-
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(true);
 
   const [visibleModal, setVisibleModal] = React.useState(false);
 
-
   const [registerUser] = useSignUpMutation();
 
   const handleSubmit = async values => {
     try {
-      const { fullName, email, password, confirmPassword } = values;
+      const {fullName, email, password, confirmPassword} = values;
       if (fullName && email && password && confirmPassword) {
         if (password === confirmPassword) {
-          const formData = { fullName, email, password, confirmPassword };
-          setVisibleModal(true)
+          const formData = {fullName, email, password, confirmPassword};
+          setVisibleModal(true);
           const response = await registerUser(formData);
-          setVisibleModal(false)
+          setVisibleModal(false);
           if (response.data.status === 'Success') {
             console.log(response.data.Token);
-            await storeToken(response.data.Token)
-            navigation.navigate('SideDrawer')
+            await storeToken(response.data.Token);
+            navigation.navigate('SideDrawer');
           }
-          if (response.data.status === "Failed") {
-            console.log(response.data.Message)
+          if (response.data.status === 'Failed') {
+            console.log(response.data.Message);
             Toast.show({
               type: 'warning',
               position: 'top',
               topOffset: 10,
               // keyboardOffset	: 10,
-              text1: response.data.Message
-            })
+              text1: response.data.Message,
+            });
           }
-        }
-        else {
+        } else {
           Toast.show({
             type: 'warning',
             position: 'top',
             topOffset: 10,
-            text1: "Password and Confirm Password doesn't match"
-          })
+            text1: "Password and Confirm Password doesn't match",
+          });
         }
       } else {
         Toast.show({
           type: 'warning',
           position: 'top',
           topOffset: 10,
-          text1: "All fields are Required"
-        })
+          text1: 'All fields are Required',
+        });
       }
     } catch (error) {
       Toast.show({
         type: 'warning',
         position: 'top',
         topOffset: 10,
-        text1: "Something went wrong"
-      })
+        text1: 'Something went wrong',
+      });
     }
   };
   return (
@@ -99,43 +95,44 @@ export default function Registger() {
         <View>
           <Header name={'Login'} />
           <View>
-            <Text style={{
-              textAlign: 'center',
-              color: '#054f4f',
-              fontSize: 28,
-              fontWeight: '700',
-              marginRight: 50,
-              fontFamily: 'sans-serif-medium'
-            }}>
+            <Text
+              style={{
+                textAlign: 'center',
+                color: '#1C75BC',
+                fontSize: 28,
+                fontWeight: '700',
+                marginRight: 50,
+                fontFamily: 'sans-serif-medium',
+              }}>
               SMART GROCERY
             </Text>
-            <Text style={{
-              textAlign: 'center',
-              color: '#898989',
-              fontSize: 24,
-              fontWeight: '700',
-              fontFamily: 'sans-serif-medium',
-              marginLeft: 130
-            }}>
+            <Text
+              style={{
+                textAlign: 'center',
+                color: '#898989',
+                fontSize: 24,
+                fontWeight: '700',
+                fontFamily: 'sans-serif-medium',
+                marginLeft: 130,
+              }}>
               APPLICATION
             </Text>
           </View>
         </View>
         <Toast config={toastConfig} />
         <View style={styles.formContainer}>
-
           <Formik
             validationSchema={signUpValidationSchema}
             initialValues={initialValues}
             onSubmit={values => console.log(values)}>
-            {({ handleChange, handleBlur, values, errors, isValid }) => (
+            {({handleChange, handleBlur, values, errors, isValid}) => (
               <View>
                 <View>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ justifyContent: 'center' }}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{justifyContent: 'center'}}>
                       <Ionicons name="person-outline" size={20} />
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={{flex: 1}}>
                       <TextInput
                         type="focused"
                         name="fullName"
@@ -144,20 +141,20 @@ export default function Registger() {
                         onChangeText={handleChange('fullName')}
                         onBlur={handleBlur('fullName')}
                         value={values.fullName}
-                        activeUnderlineColor="#054f4f"
+                        activeUnderlineColor="#1C75BC"
                       />
                     </View>
                   </View>
                   {errors.fullName && (
-                    <Text style={{ fontSize: 12, color: 'red', marginLeft: 20 }}>
+                    <Text style={{fontSize: 12, color: 'red', marginLeft: 20}}>
                       {errors.fullName}
                     </Text>
                   )}
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ justifyContent: 'center' }}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{justifyContent: 'center'}}>
                       <Ionicons name="mail-outline" size={20} />
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={{flex: 1}}>
                       <TextInput
                         type="focused"
                         name="email"
@@ -167,21 +164,21 @@ export default function Registger() {
                         onBlur={handleBlur('email')}
                         value={values.email}
                         keyboardType="email-address"
-                        activeUnderlineColor="#054f4f"
+                        activeUnderlineColor="#1C75BC"
                       />
                     </View>
                   </View>
                   {errors.email && (
-                    <Text style={{ fontSize: 12, color: 'red', marginLeft: 20 }}>
+                    <Text style={{fontSize: 12, color: 'red', marginLeft: 20}}>
                       {errors.email}
                     </Text>
                   )}
 
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ justifyContent: 'center' }}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{justifyContent: 'center'}}>
                       <Ionicons name="lock-closed-outline" size={25} />
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={{flex: 1}}>
                       <TextInput
                         type="flat"
                         name="password"
@@ -190,7 +187,7 @@ export default function Registger() {
                         onChangeText={handleChange('password')}
                         onBlur={handleBlur('password')}
                         value={values.password}
-                        activeUnderlineColor="#054f4f"
+                        activeUnderlineColor="#1C75BC"
                         secureTextEntry={passwordVisible}
                         right={
                           <TextInput.Icon
@@ -202,15 +199,15 @@ export default function Registger() {
                     </View>
                   </View>
                   {errors.password && (
-                    <Text style={{ fontSize: 12, color: 'red', marginLeft: 20 }}>
+                    <Text style={{fontSize: 12, color: 'red', marginLeft: 20}}>
                       {errors.password}
                     </Text>
                   )}
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ justifyContent: 'center' }}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{justifyContent: 'center'}}>
                       <Ionicons name="lock-closed-outline" size={25} />
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={{flex: 1}}>
                       <TextInput
                         mode="flat"
                         name="confirmPassword"
@@ -219,19 +216,21 @@ export default function Registger() {
                         onChangeText={handleChange('confirmPassword')}
                         onBlur={handleBlur('confirmPassword')}
                         value={values.confirmPassword}
-                        activeUnderlineColor="#054f4f"
+                        activeUnderlineColor="#1C75BC"
                         secureTextEntry={confirmPasswordVisible}
                         right={
                           <TextInput.Icon
                             name={confirmPasswordVisible ? 'eye-off' : 'eye'}
-                            onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                            onPress={() =>
+                              setConfirmPasswordVisible(!confirmPasswordVisible)
+                            }
                           />
                         }
                       />
                     </View>
                   </View>
                   {errors.confirmPassword && (
-                    <Text style={{ fontSize: 12, color: 'red', marginLeft: 20 }}>
+                    <Text style={{fontSize: 12, color: 'red', marginLeft: 20}}>
                       {errors.confirmPassword}
                     </Text>
                   )}
@@ -240,7 +239,7 @@ export default function Registger() {
                   <Button
                     // disabled={!isValid}
                     style={{
-                      backgroundColor: '#054f4f',
+                      backgroundColor: '#1C75BC',
                     }}
                     theme={{
                       roundness: 10,
@@ -256,22 +255,26 @@ export default function Registger() {
             )}
           </Formik>
         </View>
-
       </React.Fragment>
-      {visibleModal ? (<ModalNative
-        modalVisible={visibleModal}
-        setModalVisible={setVisibleModal}
-      >
-        <View style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center'
-
-        }}>
-          <LottieView style={{ height: 120 }} source={require('../../assets/lottie/loader.json')} autoPlay loop />
-        </View>
-      </ModalNative>) : (null)}
-
+      {visibleModal ? (
+        <ModalNative
+          modalVisible={visibleModal}
+          setModalVisible={setVisibleModal}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <LottieView
+              style={{height: 120}}
+              source={require('../../assets/lottie/loader.json')}
+              autoPlay
+              loop
+            />
+          </View>
+        </ModalNative>
+      ) : null}
     </ScrollView>
   );
 }

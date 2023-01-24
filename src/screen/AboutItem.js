@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,71 +11,66 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { Button } from 'react-native-paper';
-import { ScrollView } from 'react-native-gesture-handler';
+import {Button} from 'react-native-paper';
+import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppStatusBar from '../components/AppStatusBar';
-const { width } = Dimensions.get('screen');
-import { LineChart, BarChart } from 'react-native-chart-kit';
-import { setCartInformation } from '../features/api/cartReducerSlice'
-import { storeOrder, removeOrder, getAllOrder } from '../services/orderLocalStore'
-import { useDispatch, useSelector } from 'react-redux';
+const {width} = Dimensions.get('screen');
+import {LineChart, BarChart} from 'react-native-chart-kit';
+import {setCartInformation} from '../features/api/cartReducerSlice';
+import {
+  storeOrder,
+  removeOrder,
+  getAllOrder,
+} from '../services/orderLocalStore';
+import {useDispatch, useSelector} from 'react-redux';
 const cardWidth = width - 20;
 
-export default function AboutItem({ navigation, route }) {
+export default function AboutItem({navigation, route}) {
   const item = route.params;
   const dispatch = useDispatch();
 
-
-  const [minPrice, seMinPrice] = useState(0)
-  const [checkDisabled, setCheckDisabled] = useState(false)
-
-
-
+  const [minPrice, seMinPrice] = useState(0);
+  const [checkDisabled, setCheckDisabled] = useState(false);
 
   const getLowestPrice = () => {
     let temp;
     item.productCompany.map((data, index) => {
-      temp = item.productCompany[0].companyPrice
+      temp = item.productCompany[0].companyPrice;
       if (data.companyPrice < temp) {
-        temp = data.companyPrice
+        temp = data.companyPrice;
       }
-    })
+    });
 
-    seMinPrice(temp)
-    checkDisabledFun()
-
-  }
+    seMinPrice(temp);
+    checkDisabledFun();
+  };
 
   const checkDisabledFun = async () => {
     // removeOrder()
-    const checkOrder = await getAllOrder()
+    const checkOrder = await getAllOrder();
     if (checkOrder !== null) {
-      console.log(checkOrder)
-      checkOrder.map((orderData) => {
+      console.log(checkOrder);
+      checkOrder.map(orderData => {
         if (orderData.productId === item._id) {
-          setCheckDisabled(true)
+          setCheckDisabled(true);
         }
-      })
-
-
+      });
     } else {
-      console.log(checkOrder)
+      console.log(checkOrder);
     }
-
-
-  }
+  };
 
   const backAction = () => {
     navigation.goBack();
-    return true
+    return true;
   };
   useEffect(() => {
-    getLowestPrice()
+    getLowestPrice();
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
 
     return () => backHandler.remove();
@@ -108,7 +103,7 @@ export default function AboutItem({ navigation, route }) {
                 style={{
                   fontSize: 16,
                   fontWeight: '700',
-                  color: '#054f4f',
+                  color: '#1C75BC',
                 }}>
                 PRODUCTS COMPARISON
               </Text>
@@ -135,12 +130,12 @@ export default function AboutItem({ navigation, route }) {
                 width={Dimensions.get('window').width - 30} // from react-native
                 height={200}
                 // fromZero = {true}
-                yAxisLabel="Rs."
+                yAxisLabel="Rs. "
                 yAxisInterval={1} // optional, defaults to 1
                 chartConfig={{
-                  backgroundColor: '#508484',
-                  backgroundGradientFrom: '#508484',
-                  backgroundGradientTo: '#9bb9b9',
+                  backgroundColor: '#00AEEF',
+                  backgroundGradientFrom: '#00AEEF',
+                  backgroundGradientTo: '#1C75BC',
                   decimalPlaces: 0, // optional, defaults to 2dp
                   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                   labelColor: (opacity = 1) =>
@@ -151,7 +146,7 @@ export default function AboutItem({ navigation, route }) {
                   propsForDots: {
                     r: '4',
                     strokeWidth: '2',
-                    stroke: '#054f4f',
+                    stroke: '#1C75BC',
                   },
                 }}
                 bezier
@@ -168,14 +163,14 @@ export default function AboutItem({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1}}>
       <View>
         <AppStatusBar
           hidden={true}
           backgroundColor="white"
           barStyle="dark-content"
         />
-        <View style={{ backgroundColor: 'white' }}>
+        <View style={{backgroundColor: 'white'}}>
           <View
             style={{
               justifyContent: 'center',
@@ -184,13 +179,13 @@ export default function AboutItem({ navigation, route }) {
               backgroundColor: 'white',
             }}>
             <ImageBackground
-              source={{ uri: item.productImage }}
-              style={{ height: '100%', width: '100%', marginTop: 1 }}>
+              source={{uri: item.productImage}}
+              style={{height: '100%', width: '100%', marginTop: 1}}>
               <View style={style.crossBackBtn}>
                 <Ionicons
                   name="close"
                   size={28}
-                  color="#054f4f"
+                  color="#1C75BC"
                   onPress={navigation.goBack}
                 />
               </View>
@@ -211,7 +206,6 @@ export default function AboutItem({ navigation, route }) {
               <Text style={style.itemCompany}>{item.productCategory}</Text>
             </View>
             <Text style={style.itemPrice}>{`Min Rs. ${minPrice}`}</Text>
-
           </View>
           <View>
             <View
@@ -226,7 +220,7 @@ export default function AboutItem({ navigation, route }) {
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ paddingBottom: 10 }}>
+        style={{paddingBottom: 10}}>
         <View>
           <ChartSection />
         </View>
@@ -254,7 +248,7 @@ export default function AboutItem({ navigation, route }) {
               style={{
                 fontSize: 16,
                 fontWeight: '700',
-                color: '#054f4f',
+                color: '#1C75BC',
               }}>
               AVAILABLE PRODUCTS
             </Text>
@@ -262,40 +256,45 @@ export default function AboutItem({ navigation, route }) {
           </View>
           <View>
             {item.productCompany?.map((companyData, index) => {
-
               return (
-                <View key={index} style={style.cartCard}>
-                  <Image
-                    source={{ uri: item.productImage }}
-                    style={{ height: 50, width: 50, borderRadius: 60 / 2 }}
-                  />
-                  <View
-                    style={{
-                      height: 100,
-                      marginLeft: 10,
-                      paddingVertical: 20,
-                      flex: 1,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}>
-                    <View>
-                      <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-                        {companyData.companyName}
-                      </Text>
-                      <Text style={{ fontSize: 14, color: 'grey' }}>
-                        {` Stock: ${companyData.companyProductStock}`}
-                      </Text>
-                    </View>
-                    <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                      Rs.{companyData.companyPrice}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}></View>
+                <View key={index}>
+                  {companyData.companyName ? (
+                    <>
+                      <View style={style.cartCard}>
+                        <Image
+                          source={{uri: item.productImage}}
+                          style={{height: 50, width: 50, borderRadius: 60 / 2}}
+                        />
+                        <View
+                          style={{
+                            height: 100,
+                            marginLeft: 10,
+                            paddingVertical: 20,
+                            flex: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                          <View>
+                            <Text style={{fontWeight: 'bold', fontSize: 14}}>
+                              {companyData?.companyName}
+                            </Text>
+                            <Text style={{fontSize: 14, color: 'grey'}}>
+                              {` Stock: ${companyData?.companyProductStock}`}
+                            </Text>
+                          </View>
+                          <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                            Rs.{companyData?.companyPrice}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}></View>
+                      </View>
+                    </>
+                  ) : null}
                 </View>
               );
             })}
@@ -305,22 +304,20 @@ export default function AboutItem({ navigation, route }) {
               // marginHorizontal: 60,
               marginVertical: 20,
               justifyContent: 'center',
-              alignItems: 'center'
+              alignItems: 'center',
             }}>
             <Button
               style={{
-                backgroundColor: '#054f4f',
+                backgroundColor: '#1C75BC',
                 borderRadius: 30,
-                width: '50%'
+                width: '50%',
               }}
               disabled={checkDisabled}
               mode="contained"
               onPress={() => {
+                storeOrder(item);
 
-
-                storeOrder(item)
-
-                setCheckDisabled(true)
+                setCheckDisabled(true);
               }}>
               ADD TO CART
             </Button>
@@ -349,7 +346,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
 
-  title: { color: 'white', fontWeight: 'bold', fontSize: 18 },
+  title: {color: 'white', fontWeight: 'bold', fontSize: 18},
   btnContainer: {
     backgroundColor: 'green',
     height: 60,
@@ -359,8 +356,8 @@ const style = StyleSheet.create({
   },
 
   itemName: {
-    maxWidth: '80%',
-    fontSize: 18,
+    maxWidth: '70%',
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 15,
@@ -374,15 +371,15 @@ const style = StyleSheet.create({
     marginLeft: 15,
     marginVertical: 10,
     marginTop: -10,
-    color: '#054f4f',
+    color: '#1C75BC',
+    fontWeight: 'bold',
   },
   itemPrice: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: 'bold',
-    marginRight: 15,
     marginVertical: 10,
     color: 'black',
-    marginLeft: 15,
+    // marginLeft: 15,
     marginTop: -20,
   },
   cartCard: {

@@ -23,10 +23,10 @@ export default function Header({name}) {
           mode="Outlined"
           style={{
             borderWidth: 1,
-            borderColor: '#054f4f',
+            borderColor: '#1C75BC',
             borderRadius: 50,
           }}
-          color="#054f4f"
+          color="#1C75BC"
           onPress={() => {
             if (name == 'Login') {
               navigation.navigate('Login');
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerButtonText: {
-    color: '#054f4f',
+    color: '#1C75BC',
     fontSize: 15,
     fontWeight: '700',
   },

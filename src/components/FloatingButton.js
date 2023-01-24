@@ -19,8 +19,8 @@ export default function FloatingButton() {
       icon: <Ionicons name="camera-outline" size={20} color="white" />,
       name: 'use_Camera',
       position: 2,
-      color: '#054f4f',
-      textColor: '#054f4f',
+      color: '#1C75BC',
+      textColor: '#1C75BC',
       textElevation: 10,
     },
     {
@@ -28,8 +28,8 @@ export default function FloatingButton() {
       icon: <Ionicons name="image-outline" size={20} color="white" />,
       name: 'use_Gallery',
       position: 1,
-      color: '#054f4f',
-      textColor: '#054f4f',
+      color: '#1C75BC',
+      textColor: '#1C75BC',
       textElevation: 10,
     },
   ];
@@ -43,7 +43,7 @@ export default function FloatingButton() {
           <Text style={{color: 'white'}}>{FloatingButtonText}</Text>
         }
         showBackground={true}
-        color="#054f4f"
+        color="#1C75BC"
         actions={actions}
         onOpen={() => {
           setFloatingButtonText('CLOSE');

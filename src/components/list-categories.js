@@ -28,7 +28,7 @@ export default function listCategories() {
           <View
             style={{
               backgroundColor:
-                selectedCategoryIndex == index ? '#125858' : '#82a7a7',
+                selectedCategoryIndex == index ? '#1C75BC' : '#00AEEF',
               ...style.categoryBtn,
             }}>
             <View style={style.categoryBtnImgCon}>
