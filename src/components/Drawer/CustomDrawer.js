@@ -12,19 +12,22 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import { removeToken } from '../../services/authorizationToken';
+import {useNavigation} from '@react-navigation/native';
+import {removeToken, removeOrder} from '../../services/authorizationToken';
+import {useSelector} from 'react-redux';
 
-export default function CustomDrawer({ ...props }) {
+export default function CustomDrawer({...props}) {
   const navigation = useNavigation();
-
+  const {userInfo} = useSelector(state => state.userInfo);
+  console.log(userInfo, 'HAMZA');
   const handleLogout = async () => {
-    await removeToken('token')
+    await removeToken('token');
+    // removeOrder();
     navigation.navigate('Login');
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={
@@ -59,16 +62,16 @@ export default function CustomDrawer({ ...props }) {
                   color: 'white',
                   //   borderWidth: 1,
                 }}></View>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+              <Text style={{fontSize: 18, fontWeight: 'bold'}}>
                 {`Hafiz Hamza`}
               </Text>
-              <Text style={{ fontSize: 16 }}>hamza@gmail.com</Text>
+              <Text style={{fontSize: 16}}>hamza@gmail.com</Text>
             </View>
           </View>
           <View style={{}}></View>
         </View>
 
-        <View style={{ backgroundColor: 'white', paddingTop: 10 }}>
+        <View style={{backgroundColor: 'white', paddingTop: 10}}>
           <DrawerItemList {...props} />
         </View>
 
@@ -77,7 +80,7 @@ export default function CustomDrawer({ ...props }) {
           Style={{
             backgroundColor: 'white',
           }}
-          icon={({ color, size }) => (
+          icon={({color, size}) => (
             <Ionicons color={color} size={15} name={`ios-home`} />
           )}
           onPress={() => navigation.navigate('carousel')}
@@ -87,7 +90,7 @@ export default function CustomDrawer({ ...props }) {
           Style={{
             backgroundColor: 'white',
           }}
-          icon={({ color, size }) => (
+          icon={({color, size}) => (
             <Ionicons color={color} size={15} name={`ios-home`} />
           )}
           onPress={() => navigation.navigate('Landing')}
@@ -97,7 +100,7 @@ export default function CustomDrawer({ ...props }) {
           Style={{
             backgroundColor: 'white',
           }}
-          icon={({ color, size }) => (
+          icon={({color, size}) => (
             <Ionicons color={color} size={15} name={`ios-home`} />
           )}
           onPress={() => navigation.navigate('SplashScreen')}
@@ -112,7 +115,7 @@ export default function CustomDrawer({ ...props }) {
         }}>
         <View>
           <TouchableOpacity onPress={handleLogout}>
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{flexDirection: 'row'}}>
               <Ionicons name="exit-outline" size={22} />
               <Text
                 style={{

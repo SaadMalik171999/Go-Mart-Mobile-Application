@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,18 +12,18 @@ import {
   BackHandler,
   ScrollView,
 } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import ModalNative from '../components/Modal/Modal';
-const { width, height } = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 import AppStatusBar from '../components/AppStatusBar';
 import CustomInput from './CustomInput';
 import useIsLoading from '../hooks/useIsLoader';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useScanListMutation } from '../services/userAuthentication';
-import { set } from 'immer/dist/internal';
+import {useScanListMutation} from '../services/userAuthentication';
+import {set} from 'immer/dist/internal';
 
-export default function ScanImage({ navigation, route }) {
+export default function ScanImage({navigation, route}) {
   const imgData = new FormData();
   const checkCameraOrGellary = route.params;
   const [filePath, setFilePath] = useState({});
@@ -35,7 +35,7 @@ export default function ScanImage({ navigation, route }) {
   const [loader, showLoader, hideLoader] = useIsLoading();
 
   const uploadProfileImage = async image => {
-    console.log("pohancha 3")
+    console.log('pohancha 3');
 
     imgData.append('scanImage', {
       uri: image.uri,
@@ -43,17 +43,12 @@ export default function ScanImage({ navigation, route }) {
       name: image.fileName,
     });
 
-
-
-
     //for testing purpose
     // showLoader();
     // setImageResponse(["AAta", "Daal", "Rice", "Noodles", "Potato"]);
     // hideLoader();
 
-    //original 
-
-
+    //original
 
     // const config = {
     //   method: 'POST',
@@ -98,20 +93,18 @@ export default function ScanImage({ navigation, route }) {
 
   const backAction = () => {
     navigation.goBack();
-    return true
+    return true;
   };
 
   useEffect(() => {
     checkParamsValue();
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
 
     return () => backHandler.remove();
   }, []);
-
-
 
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -151,7 +144,6 @@ export default function ScanImage({ navigation, route }) {
       return false;
     } else return true;
   };
-
 
   // const captureCamera = async () => {
   //   console.log("Yes")
@@ -199,10 +191,8 @@ export default function ScanImage({ navigation, route }) {
           if (response.didCancel) {
             navigation.navigate('DashBoard');
           } else {
-            console.log("pohancha 1")
+            console.log('pohancha 1');
             // console.log('fileName -> ', response?.assets[0]);
-
-
 
             setFilePath(response.assets[0]);
             // console.log("pohancha 2", response.assets[0])
@@ -211,7 +201,7 @@ export default function ScanImage({ navigation, route }) {
         });
       }
     } catch (error) {
-      console.log("Something went wrong")
+      console.log('Something went wrong');
     }
   };
 
@@ -252,8 +242,9 @@ export default function ScanImage({ navigation, route }) {
     <>
       {loader ? (
         loader
+        
       ) : (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{flex: 1}}>
           <AppStatusBar
             backgroundColor="black"
             barStyle="dark-content"
@@ -261,14 +252,15 @@ export default function ScanImage({ navigation, route }) {
           />
           <View style={styles.header}>
             <Icon name="arrow-back-ios" size={28} onPress={navigation.goBack} />
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
               Search Products
             </Text>
           </View>
           <View style={styles.container}>
-            <View style={{
-              backgroundColor: 'red'
-            }}>
+            <View
+              style={{
+                backgroundColor: 'red',
+              }}>
               <View
                 style={{
                   width: width,
@@ -277,7 +269,7 @@ export default function ScanImage({ navigation, route }) {
                   aspectRatio: 1 * 1.4,
                 }}>
                 <Image
-                  source={{ uri: filePath.uri }}
+                  source={{uri: filePath.uri}}
                   style={{
                     resizeMode: 'contain',
                     width: '100%',

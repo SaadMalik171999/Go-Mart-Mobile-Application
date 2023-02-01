@@ -1,377 +1,550 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    SafeAreaView,
-    StyleSheet,
-    View,
-    Text,
-    Image,
-    BackHandler,
-    TouchableOpacity,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  BackHandler,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import {
-    FlatList,
-    ScrollView,
-    TextInput,
-} from 'react-native-gesture-handler';
-import { Button } from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {FlatList, ScrollView, TextInput} from 'react-native-gesture-handler';
+import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { getAllOrder, updateOrder } from '../services/orderLocalStore'
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { DataTable } from 'react-native-paper';
-import { products } from '../utils/food'
+import {SwipeListView} from 'react-native-swipe-list-view';
+import {DataTable} from 'react-native-paper';
+import {getAllOrder} from '../services/orderLocalStore';
+import useIsLoading from '../hooks/useIsLoader';
+const {width} = Dimensions.get('screen');
+import {LineChart, BarChart} from 'react-native-chart-kit';
+const cardWidth = width - 20;
 
-const optionsPerPage = [2, 3];
+function ProductComparision({navigation}) {
+  const getProducts = useSelector(state => state.productInfo);
 
+  const [loader, showLoader, hideLoader] = useIsLoading();
+  const [gfresh, setGfresh] = useState([]);
+  const [graphData, setGraphData] = useState([]);
+  const [companyM, setCompanyM] = useState([]);
+  const [companyN, setCompanyN] = useState([]);
+  const [companyC, setCompanyC] = useState([]);
+  const [companyS, setCompanyS] = useState([]);
+  const [cartedProductSaad, setcartedProductSaad] = useState([]);
 
+  const [total, setTotal] = useState({
+    gfreshTotal: undefined,
+    grocetriaTotal: undefined,
+    foodigoTotal: undefined,
+    smartTotal: undefined,
+  });
+  var cartSAAD = [];
+  const getCartProducts = async () => {
+    let cartedProduct = [];
+    let cartItems = await getAllOrder();
+    // console.log(cartItems, 'SAAD');
+    const extractAllIds = cartItems.map(product => product.productName);
 
-function ProductComparision({ navigation }) {
-
-
-
-    const [metro, setMetro] = useState(products)
-    const [companyM, setCompanyM] = useState([])
-    const [companyN, setCompanyN] = useState([])
-    const [companyC, setCompanyC] = useState([])
-    const [companyS, setCompanyS] = useState([])
-
-    const [total, setTotal] = useState({
-        metroTotal: undefined,
-        naheedTotal: undefined,
-        carreTotal: undefined,
-        smartTotal: undefined
-    })
-
-
-    const [page, setPage] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = React.useState(optionsPerPage[0]);
-
-    const removeOther = () => {
-        let metroComapny = []
-        let naheedComapny = []
-        let carreComapny = []
-
-        products.map((product, index) => {
-            for (let i = 0; i < product.productCompany.length; i++) {
-                // console.log(product.productCompany[i])
-                if (product.productCompany[i].companyName === 'Metro Online') {
-                    metroComapny.push({
-                        productID: product._id,
-                        productName: product.productName,
-                        productCompany: product.productCompany[i].companyName,
-                        productPrice: product.productCompany[i].companyPrice,
-                        productStoke: product.productCompany[i].companyProductStock,
-                        productImage: product.productImage,
-                        productCategory: product.productCategory,
-                        productQuantity: index + 1,
-                    })
-                }
-                else if (product.productCompany[i].companyName === 'Naheed') {
-                    naheedComapny.push({
-                        productID: product._id,
-                        productName: product.productName,
-                        productCompany: product.productCompany[i].companyName,
-                        productPrice: product.productCompany[i].companyPrice,
-                        productStoke: product.productCompany[i].companyProductStock,
-                        productImage: product.productImage,
-                        productCategory: product.productCategory,
-                        productQuantity: index + 1,
-                    })
-                }
-                else if (product.productCompany[i].companyName === 'Carrefour') {
-                    carreComapny.push({
-                        productID: product._id,
-                        productName: product.productName,
-                        productCompany: product.productCompany[i].companyName,
-                        productPrice: product.productCompany[i].companyPrice,
-                        productStoke: product.productCompany[i].companyProductStock,
-                        productImage: product.productImage,
-                        productCategory: product.productCategory,
-                        productQuantity: index + 1,
-                    })
-                }
-            }
-
-        })
-
-
-
-
-        setCompanyM(metroComapny)
-        setCompanyN(naheedComapny)
-        setCompanyC(carreComapny)
-
-        const metroTotal = metroComapny.map(item => item.productPrice * item.productQuantity).reduce((prev, next) => prev + next)
-        console.log(metroTotal)
-        const naheedTotal = naheedComapny.map(item => item.productPrice * item.productQuantity).reduce((prev, next) => prev + next)
-        console.log(naheedTotal)
-        const carreTotal = carreComapny.map(item => item.productPrice * item.productQuantity).reduce((prev, next) => prev + next)
-        console.log(carreTotal)
-
-        setTotal({ metroTotal: metroTotal, naheedTotal: naheedTotal, carreTotal: carreTotal })
-
-
+    if (getProducts.data.length) {
+      getProducts.data.map(products => {
+        if (extractAllIds.includes(products.productName)) {
+          cartedProduct.push(products);
+          cartedProductSaad.push(products);
+        }
+      });
+      setGfresh(cartedProduct);
+      removeOther(cartedProduct);
     }
+  };
 
-    useEffect(() => {
-        removeOther()
-    }, [])
+  //   console.log(cartedProductSaad, 'SAAD');
 
-    useEffect(() => {
-        setPage(0);
-    }, [itemsPerPage]);
-    return (
+  const removeOther = async cartedProduct => {
+    let gfreshCompany = [];
+    let grocetriaCompany = [];
+    let foodigoCompany = [];
 
-        <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-            <View style={style.header}>
-                <Icon name="arrow-back-ios" size={28} onPress={navigation.goBack} />
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Products Analysis </Text>
-            </View>
-           
+    showLoader();
+    cartedProduct.map(async (product, index) => {
+      for (let i = 0; i < product.productCompany.length; i++) {
+        if (product.productCompany[i].companyName === 'Gfresh') {
+          gfreshCompany.push({
+            productID: product._id,
+            productName: product.productName,
+            productCompany: product.productCompany[i].companyName,
+            productPrice: product.productCompany[i].companyPrice,
+            productStoke: product.productCompany[i].companyProductStock,
+            productImage: product.productImage,
+            productCategory: product.productCategory,
+            productQuantity: index + 1,
+          });
+        } else if (product.productCompany[i].companyName === 'Groceteria') {
+          grocetriaCompany.push({
+            productID: product._id,
+            productName: product.productName,
+            productCompany: product.productCompany[i].companyName,
+            productPrice: product.productCompany[i].companyPrice,
+            productStoke: product.productCompany[i].companyProductStock,
+            productImage: product.productImage,
+            productCategory: product.productCategory,
+            productQuantity: index + 1,
+          });
+        } else if (product.productCompany[i].companyName === 'Foodigo') {
+          foodigoCompany.push({
+            productID: product._id,
+            productName: product.productName,
+            productCompany: product.productCompany[i].companyName,
+            productPrice: product.productCompany[i].companyPrice,
+            productStoke: product.productCompany[i].companyProductStock,
+            productImage: product.productImage,
+            productCategory: product.productCategory,
+            productQuantity: index + 1,
+          });
+        }
+      }
+    });
 
+    setCompanyM(gfreshCompany);
+    setCompanyN(grocetriaCompany);
+    setCompanyC(foodigoCompany);
 
-                
-                    <ScrollView style={{ marginTop: 20 }}
-                    showsVerticalScrollIndicator={false}
-                    >
-                       
-                        <ScrollView
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                        >
-                            <DataTable >
+    const gfreshTotal = gfreshCompany
+      ?.map(item => item.productPrice)
+      .reduce((prev, next) => prev + next, 0);
+    const grocetriaTotal = grocetriaCompany
+      ?.map(item => item.productPrice)
+      .reduce((prev, next) => prev + next, 0);
+    const foodigoTotal = foodigoCompany
+      ?.map(item => item.productPrice)
+      .reduce((prev, next) => prev + next, 0);
+    setTotal({
+      gfreshTotal: gfreshTotal,
+      grocetriaTotal: grocetriaTotal,
+      foodigoTotal: foodigoTotal,
+    });
 
-                                <DataTable.Header >
-                                    <DataTable.Title style={{ width: 200, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: "bold", fontSize: 15 }}>Product Image</Text>
+    const graphDataSet = [
+      {companyName: 'Gfresh', totalPrice: gfreshTotal},
+      {companyName: 'Groceteria', totalPrice: grocetriaTotal},
+      {companyName: 'Foodigo', totalPrice: foodigoTotal},
+    ];
 
+    setGraphData(graphDataSet);
 
-                                    </DataTable.Title>
-                                    <DataTable.Title style={{ width: 200, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: "bold", fontSize: 15 }}>Product Name</Text>
+    hideLoader();
+  };
 
-                                    </DataTable.Title>
+  useEffect(() => {
+    getCartProducts();
+  }, []);
 
-                                    <DataTable.Title style={{ width: 200, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: "bold", fontSize: 15 }}>Metro Company</Text>
-                                    </DataTable.Title>
+  return (
+    <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
+      <View style={style.header}>
+        <Icon name="arrow-back-ios" size={28} onPress={navigation.goBack} />
+        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+          Products Analysis
+        </Text>
+      </View>
 
+      {loader ? (
+        loader
+      ) : (
+        <ScrollView
+          style={{marginTop: 20}}
+          showsVerticalScrollIndicator={false}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            <DataTable style={{marginHorizontal: 30}}>
+              <DataTable.Header
+                style={{
+                  borderColor: 'gray',
+                  borderWidth: 2,
+                  height: 80,
+                }}>
+                <DataTable.Title
+                  style={{
+                    width: 200,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Product Image
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title
+                  style={{
+                    width: 200,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Product Name
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title
+                  style={{
+                    width: 200,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Gfresh Company
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title
+                  style={{
+                    width: 200,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Groceteria Company
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title
+                  style={{
+                    width: 200,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Foodigo Company
+                  </Text>
+                </DataTable.Title>
+              </DataTable.Header>
 
-                                    <DataTable.Title style={{ width: 200, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: "bold", fontSize: 15 }}>Naheed Company</Text>
-                                    </DataTable.Title>
+              {cartedProductSaad?.map((data, index) => {
+                return (
+                  <DataTable.Row
+                    style={{borderColor: 'gray', borderWidth: 2}}
+                    key={data._id}>
+                    <React.Fragment key={data._id}>
+                      <DataTable.Cell
+                        style={{
+                          width: 40,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            // width: 100,
+                          }}>
+                          <Image
+                            source={{uri: data?.productImage}}
+                            style={{height: 60, width: 60}}
+                          />
+                        </View>
+                      </DataTable.Cell>
+                    </React.Fragment>
+                    <React.Fragment key={data._id}>
+                      <DataTable.Cell
+                        style={{
+                          width: 100,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: 200,
+                          }}>
+                          {console.log}
+                          <Text>{data?.productName}</Text>
+                        </View>
+                      </DataTable.Cell>
+                    </React.Fragment>
 
+                    <React.Fragment key={data._id}>
+                      <DataTable.Cell
+                        style={{
+                          width: 40,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        {data?.productCompany[0]?.companyName === 'Gfresh' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[0]?.companyPrice}</Text>
+                          </View>
+                        )}
+                        {data?.productCompany[1]?.companyName === 'Gfresh' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[1]?.companyPrice}</Text>
+                          </View>
+                        )}
+                        {data?.productCompany[2]?.companyName === 'Gfresh' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[2]?.companyPrice}</Text>
+                          </View>
+                        )}
+                      </DataTable.Cell>
+                    </React.Fragment>
 
-                                    <DataTable.Title style={{ width: 200, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: "bold", fontSize: 15 }}>Carrefour Company</Text>
+                    <React.Fragment key={data._id}>
+                      <DataTable.Cell
+                        style={{
+                          width: 40,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        {data?.productCompany[0]?.companyName ===
+                          'Groceteria' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[0]?.companyPrice}</Text>
+                          </View>
+                        )}
 
-                                    </DataTable.Title>
+                        {data?.productCompany[1]?.companyName ===
+                          'Groceteria' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[1]?.companyPrice}</Text>
+                          </View>
+                        )}
 
+                        {data?.productCompany[2]?.companyName ===
+                          'Groceteria' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[2]?.companyPrice}</Text>
+                          </View>
+                        )}
+                      </DataTable.Cell>
+                    </React.Fragment>
 
-                                </DataTable.Header>
+                    <React.Fragment key={data._id}>
+                      <DataTable.Cell
+                        style={{
+                          width: 40,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        {data?.productCompany[0]?.companyName === 'Foodigo' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[0]?.companyPrice}</Text>
+                          </View>
+                        )}
 
-                                {metro.map((items) => {
-                                    return (
-                                        <DataTable.Row
+                        {data?.productCompany[1]?.companyName === 'Foodigo' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[1]?.companyPrice}</Text>
+                          </View>
+                        )}
 
-                                            style={{ height: 60 }}
-                                            key={items._id}>
-                                            <DataTable.Cell style={{ width: 40, justifyContent: 'center', alignItems: 'center' }}>
-                                                <View style={{
-                                                    height: '100%',
-                                                }}>
-                                                    <Image source={{ uri: items.productImage }} style={{ height: 60, width: 60 }} />
-                                                </View>
-                                            </DataTable.Cell>
-                                            <DataTable.Cell style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
-                                                <View
-                                                    style={{
+                        {data?.productCompany[2]?.companyName === 'Foodigo' && (
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text>{data?.productCompany[2]?.companyPrice}</Text>
+                          </View>
+                        )}
+                      </DataTable.Cell>
+                    </React.Fragment>
+                  </DataTable.Row>
+                );
 
-                                                        width: 150,
+                //   }
+              })}
 
+              <DataTable.Row
+                style={{height: 60, borderColor: 'gray', borderWidth: 2}}>
+                <DataTable.Cell
+                  style={{
+                    width: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text></Text>
+                  </View>
+                </DataTable.Cell>
 
+                <DataTable.Cell
+                  style={{
+                    width: 10,
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                    }}>
+                    <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                      Total
+                    </Text>
+                  </View>
+                </DataTable.Cell>
 
-                                                    }}
-                                                >
+                <DataTable.Cell
+                  style={{
+                    width: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                      Rs. {total.gfreshTotal}
+                    </Text>
+                  </View>
+                </DataTable.Cell>
 
-                                                    <Text  >
-                                                        {items.productName}
-                                                    </Text>
-                                                </View>
+                <DataTable.Cell
+                  style={{
+                    width: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                      Rs. {total.grocetriaTotal}
+                    </Text>
+                  </View>
+                </DataTable.Cell>
 
-                                            </DataTable.Cell>
-                                            {companyM?.map((metro, index) => {
-                                                if (items.productName === metro.productName) {
-                                                    return (
-                                                        <React.Fragment key={metro._id + 1} >
-
-                                                            <DataTable.Cell style={{ width: 70, paddingLeft: 70, justifyContent: 'center', alignItems: 'center' }}>
-                                                                <View style={{
-                                                                    width: 100,
-                                                                    justifyContent: 'center', alignItems: 'center',
-                                                                }}>
-                                                                    <Text >
-                                                                        {metro.productPrice}
-                                                                    </Text>
-                                                                </View>
-                                                            </DataTable.Cell>
-                                                            {/* <DataTable.Cell numeric>{metro.productQuantity}</DataTable.Cell>
-                                                            <DataTable.Cell numeric>{metro.productPrice * metro.productQuantity}</DataTable.Cell> */}
-                                                        </React.Fragment>
-                                                    )
-                                                }
-                                            })}
-                                            {companyN?.map((naheed, index) => {
-                                                if (items.productName === naheed.productName) {
-                                                    return (
-                                                        <React.Fragment key={naheed._id + 1}>
-
-                                                            <DataTable.Cell style={{ width: 70, paddingLeft: 40, justifyContent: 'center', alignItems: 'center' }}>
-                                                                <View style={{
-                                                                    width: 100,
-                                                                    justifyContent: 'center', alignItems: 'center',
-                                                                }}>
-                                                                    <Text >
-                                                                        {naheed.productPrice}
-                                                                    </Text>
-                                                                </View>
-                                                            </DataTable.Cell>
-                                                            {/* <DataTable.Cell numeric>{naheed.productQuantity}</DataTable.Cell> */}
-                                                            {/* <DataTable.Cell numeric>{naheed.productPrice * naheed.productQuantity}</DataTable.Cell> */}
-                                                        </React.Fragment>
-                                                    )
-                                                }
-                                            })}
-                                            {companyC?.map((carre, index) => {
-                                                if (items.productName === carre.productName) {
-                                                    return (
-                                                        <React.Fragment key={carre._id + 1}>
-
-                                                            <DataTable.Cell style={{
-                                                                width: 70,
-                                                                paddingLeft: 70,
-                                                                justifyContent: 'center', alignItems: 'center',
-                                                            }}>
-                                                                <View
-                                                                    style={{
-                                                                        width: 100,
-                                                                        justifyContent: 'center', alignItems: 'center',
-                                                                    }}>
-                                                                    <Text >
-                                                                        {carre.productPrice}
-                                                                    </Text>
-                                                                </View>
-                                                            </DataTable.Cell>
-                                                            {/* <DataTable.Cell numeric>{carre.productQuantity}</DataTable.Cell> */}
-                                                            {/* <DataTable.Cell numeric>{carre.productPrice * carre.productQuantity}</DataTable.Cell> */}
-                                                        </React.Fragment>
-                                                    )
-                                                }
-                                            })}
-
-                                        </DataTable.Row>
-
-
-                                    )
-
-                                })
-
-                                }
-
-                                <DataTable.Row>
-                                    <DataTable.Cell style={{
-                                        width: 10,
-                                        justifyContent: 'center', alignItems: 'center',
-                                    }}>
-                                        <View style={{
-                                            width: 100,
-                                            justifyContent: 'center', alignItems: 'center',
-                                        }}>
-                                            <Text>
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-
-                                    <DataTable.Cell style={{
-                                        width: 10,
-                                        
-                                    }}>
-                                        <View style={{
-                                            width: 100,
-                                            
-                                        }}>
-                                            <Text style={{fontWeight: "bold", fontSize: 15}}>
-                                                Total
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-
-                                    <DataTable.Cell style={{
-                                        width: 10,
-                                        justifyContent: 'center', alignItems: 'center',
-                                    }}>
-                                        <View style={{
-                                            width: 100,
-                                            justifyContent: 'center', alignItems: 'center',
-                                        }}>
-                                           <Text style={{fontWeight: "bold", fontSize: 15}}>
-                                           Rs. {total.metroTotal}
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-
-                                    <DataTable.Cell style={{
-                                        width: 10,
-                                        justifyContent: 'center', alignItems: 'center',
-                                    }}>
-                                        <View style={{
-                                            width: 100,
-                                            justifyContent: 'center', alignItems: 'center',
-                                        }}>
-                                            <Text style={{fontWeight: "bold", fontSize: 15}}>
-                                            Rs. {total.naheedTotal}
-
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-
-                                    <DataTable.Cell style={{
-                                        width: 10,
-                                        justifyContent: 'center', alignItems: 'center',
-                                    }}>
-                                        <View style={{
-                                            width: 100,
-                                            justifyContent: 'center', alignItems: 'center',
-                                            paddingLeft: 40,
-                                        }}>
-                                            <Text style={{fontWeight: "bold", fontSize: 15}}>
-                                            Rs. {total.carreTotal} 
-
-                                            </Text>
-                                        </View>
-                                    </DataTable.Cell>
-                                   
-                                </DataTable.Row>
-                            </DataTable>
-                        </ScrollView>
-                    </ScrollView>
-
-               
-           
-
-        </SafeAreaView>
-    )
+                <DataTable.Cell
+                  style={{
+                    width: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      paddingLeft: 40,
+                    }}>
+                    <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                      Rs. {total.foodigoTotal}
+                    </Text>
+                  </View>
+                </DataTable.Cell>
+              </DataTable.Row>
+            </DataTable>
+          </ScrollView>
+          {/* <View
+            style={{
+              marginHorizontal: 15,
+              marginTop: 20,
+              marginBottom: 10,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: '#054f4f',
+              }}>
+              PRICE COMPARISON
+            </Text>
+          </View>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <BarChart
+              data={{
+                labels: graphData.map(label => {
+                  return label.companyName;
+                }),
+                datasets: [
+                  {
+                    data: graphData.map(data => {
+                      return data.totalPrice;
+                    }),
+                  },
+                ],
+                legend: ['Product Price'], // optional
+              }}
+              width={Dimensions.get('window').width - 30} // from react-native
+              height={200}
+              fromZero={true}
+              yAxisLabel="Rs."
+              yAxisInterval={1} // optional, defaults to 1
+              chartConfig={{
+                backgroundColor: '#508484',
+                backgroundGradientFrom: '#508484',
+                backgroundGradientTo: '#9bb9b9',
+                decimalPlaces: 0, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: '4',
+                  strokeWidth: '2',
+                  stroke: '#054f4f',
+                },
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+            />
+          </View> */}
+        </ScrollView>
+      )}
+    </SafeAreaView>
+  );
 }
 
 const style = StyleSheet.create({
-    header: {
-        paddingVertical: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 20,
-    },
-
+  header: {
+    paddingVertical: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
 });
 
-
-export default ProductComparision
+export default ProductComparision;

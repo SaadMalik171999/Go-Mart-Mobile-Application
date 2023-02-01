@@ -214,7 +214,7 @@ export default function Login() {
                     setForgetPasswordEmail(values.email);
                     setModalVisible(true);
                   }}>
-                  <Text style={{fontWeight: 'bold'}}>Forget Password?</Text>
+                  {/* <Text style={{fontWeight: 'bold'}}>Forget Password?</Text> */}
                 </TouchableOpacity>
               </View>
             </View>

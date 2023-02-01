@@ -20,7 +20,6 @@ const CustomInput = ({imageResponse}) => {
   const navigation = useNavigation();
 
   const myData = useSelector(state => state.productInfo);
-
   const [inputs, setInputs] = useState([]);
   const [searchProducts, setSearchProducts] = useState([]);
 

@@ -8,6 +8,7 @@ import {
   BackHandler,
   Alert,
   KeyboardAvoidingView,
+  // Button,
 } from 'react-native';
 import {
   FlatList,
@@ -38,10 +39,11 @@ import useIsLoading from '../hooks/useIsLoader';
 import {interpolate} from 'react-native-reanimated';
 import axios from 'axios';
 import {baseURl} from '../utils/base_URL';
+import {Button} from 'react-native-paper';
 
 export default function DashBoard({navigation}) {
   const allProductState = useSelector(state => state.productInfo);
-
+  console.log(allProductState, 'myData');
   const [loader, showLoader, hideLoader] = useIsLoading();
   const [searchText, setSearchText] = useState('');
   const [productData, setProductData] = useState([]);
@@ -53,8 +55,9 @@ export default function DashBoard({navigation}) {
   const getDataToModel = async () => {
     try {
       showLoader();
-      const response = await axios.post(`${baseURl}allproductlist`,{
-        "Content-Type": "application/json", Accept: "application/json"
+      const response = await axios.post(`${baseURl}allproductlist`, {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       });
       if (response) {
         console.log(response);
@@ -73,8 +76,9 @@ export default function DashBoard({navigation}) {
   const getData = async () => {
     try {
       showLoader();
-      const response = await axios.get(`${baseURl}finalproduct`,{
-        "Content-Type": "application/json", Accept: "application/json"
+      const response = await axios.get(`${baseURl}finalproduct`, {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       });
       if (response) {
         // console.log(response.data)
@@ -110,7 +114,7 @@ export default function DashBoard({navigation}) {
   };
 
   useEffect(() => {
-    getDataToModel();
+    // getDataToModel();
     getData();
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -154,6 +158,29 @@ export default function DashBoard({navigation}) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={style.categoriesListContainer}>
+        <View
+          style={
+            {
+              // marginLeft: 10,
+            }
+          }>
+          <Button
+            style={{
+              backgroundColor: '#1C75BC',
+              justifyContent: 'center',
+              alignItems: 'center',
+              ...style.categoryBtn,
+            }}
+            mode="contained"
+            theme={{
+              roundness: 10,
+            }}
+            onPress={() => {
+              setProductData(allProductState.data);
+            }}>
+            All
+          </Button>
+        </View>
         {product?.map((category, index) => (
           <TouchableOpacity
             key={index}
@@ -252,7 +279,8 @@ export default function DashBoard({navigation}) {
   return (
     <>
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-        <AppStatusBar
+    {loader ? loader : (<>
+      <AppStatusBar
           backgroundColor={
             FloatingButtonText === 'SCAN' ? 'white' : '#00000099'
           }
@@ -338,42 +366,42 @@ export default function DashBoard({navigation}) {
                 activeDotColor="#1C75BC">
                 <View style={style.slide}>
                   <Image
-                    source={require('../assets/images/c1.jpg')}
+                    source={require('../assets/images/Wallpapers-01.jpg')}
                     resizeMode="cover"
                     style={style.sliderImage}
                   />
                 </View>
                 <View style={style.slide}>
                   <Image
-                    source={require('../assets/images/c2.jpg')}
+                    source={require('../assets/images/Wallpapers-02.jpg')}
                     resizeMode="cover"
                     style={style.sliderImage}
                   />
                 </View>
                 <View style={style.slide}>
                   <Image
-                    source={require('../assets/images/c3.jpg')}
+                    source={require('../assets/images/Wallpapers-03.jpg')}
                     resizeMode="cover"
                     style={style.sliderImage}
                   />
                 </View>
               </Swiper>
             </View>
-
+            
             <View
               style={{
                 marginTop: 20,
                 flexDirection: 'row',
                 paddingHorizontal: 20,
-              }}></View>
-            <View>
-              <ListCategories product={productCategory} />
+              }}>
+              
+              <View>
+                <ListCategories product={productCategory} />
+              </View>
             </View>
           </React.Fragment>
         )}
-        {loader ? (
-          loader
-        ) : (
+        
           <FlatList
             showsVerticalScrollIndicator={false}
             data={productData}
@@ -382,7 +410,6 @@ export default function DashBoard({navigation}) {
             keyExtractor={item => '_' + item._id}
             numColumns={3}
           />
-        )}
 
         <FloatingAction
           listenKeyboard={false}
@@ -410,6 +437,9 @@ export default function DashBoard({navigation}) {
           //   console.log(`Main Button`);
           // }}
         />
+    </>)}
+
+        
       </SafeAreaView>
     </>
   );

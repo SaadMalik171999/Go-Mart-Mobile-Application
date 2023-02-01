@@ -122,7 +122,7 @@ export const multipleProductStore = async (allCartedProducts) => {
 
 export const updateOrder = async (updatedOrder) => {
     try {
-        if (updatedOrder.length) {
+        if (updatedOrder?.length) {
             await AsyncStorage.removeItem('order')
 
             console.log(updatedOrder)

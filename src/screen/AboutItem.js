@@ -53,7 +53,7 @@ export default function AboutItem({navigation, route}) {
     if (checkOrder !== null) {
       console.log(checkOrder);
       checkOrder.map(orderData => {
-        if (orderData.productId === item._id) {
+        if (orderData.productName === item.productName) {
           setCheckDisabled(true);
         }
       });
