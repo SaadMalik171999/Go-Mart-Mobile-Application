@@ -480,7 +480,7 @@ function ProductComparision({navigation}) {
               style={{
                 fontSize: 16,
                 fontWeight: '700',
-                color: '#054f4f',
+                color: '#1C75BC',
               }}>
               PRICE COMPARISON
             </Text>
@@ -522,7 +522,7 @@ function ProductComparision({navigation}) {
                 propsForDots: {
                   r: '4',
                   strokeWidth: '2',
-                  stroke: '#054f4f',
+                  stroke: '#1C75BC',
                 },
               }}
               bezier

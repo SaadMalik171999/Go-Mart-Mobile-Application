@@ -16,13 +16,15 @@ import {TextInput, Button} from 'react-native-paper';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {signUpValidationSchema} from '../../Schema/index';
+import {storeToken, storeUser} from '../../services/authorizationToken';
+import {useDispatch, useSelector} from 'react-redux';
 import Header from '../../components/login/Header';
 import Toast from 'react-native-toast-message';
 import {toastConfig} from '../../utils/ToastConfig';
-import {storeToken} from '../../services/authorizationToken';
 import {useSignUpMutation} from '../../services/userAuthentication';
 import ModalNative from '../../components/Modal/Modal';
 import LottieView from 'lottie-react-native';
+import {setUserInformation} from '../../features/api/userReducerSlice';
 
 const initialValues = {
   fullName: '',
@@ -33,6 +35,7 @@ const initialValues = {
 
 export default function Registger() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(true);
 
@@ -41,34 +44,35 @@ export default function Registger() {
   const [registerUser] = useSignUpMutation();
 
   const handleSubmit = async values => {
+    const {fullName, email, password, confirmPassword} = values;
     try {
-      const {fullName, email, password, confirmPassword} = values;
       if (fullName && email && password && confirmPassword) {
         if (password === confirmPassword) {
           const formData = {fullName, email, password, confirmPassword};
           setVisibleModal(true);
           const response = await registerUser(formData);
           setVisibleModal(false);
-          if (response.data.status === 'Success') {
-            console.log(response.data.Token);
-            await storeToken(response.data.Token);
-            navigation.navigate('SideDrawer');
-          }
-          if (response.data.status === 'Failed') {
-            console.log(response.data.Message);
-            Toast.show({
-              type: 'warning',
-              position: 'top',
-              topOffset: 10,
-              // keyboardOffset	: 10,
-              text1: response.data.Message,
-            });
+          if (response.data) {
+            if (response.data.status === 'Success') {
+              await storeToken(response.data.Token);
+              await storeUser(response.data.user);
+              dispatch(setUserInformation({name: fullName, email: email}));
+              navigation.navigate('SideDrawer');
+            } else if (response.data.status === 'Failed') {
+              Toast.show({
+                type: 'warning',
+                position: 'top',
+                topOffset: 0,
+                // keyboardOffset	: 10,
+                text1: response.data.Message,
+              });
+            }
           }
         } else {
           Toast.show({
             type: 'warning',
             position: 'top',
-            topOffset: 10,
+            topOffset: 0,
             text1: "Password and Confirm Password doesn't match",
           });
         }
@@ -76,7 +80,7 @@ export default function Registger() {
         Toast.show({
           type: 'warning',
           position: 'top',
-          topOffset: 10,
+          topOffset: 0,
           text1: 'All fields are Required',
         });
       }
@@ -84,7 +88,8 @@ export default function Registger() {
       Toast.show({
         type: 'warning',
         position: 'top',
-        topOffset: 10,
+        topOffset: 0,
+        // keyboardOffset	: 10,
         text1: 'Something went wrong',
       });
     }
@@ -104,7 +109,7 @@ export default function Registger() {
                 marginRight: 50,
                 fontFamily: 'sans-serif-medium',
               }}>
-              SMART GROCERY
+              GO MART GROCERY
             </Text>
             <Text
               style={{

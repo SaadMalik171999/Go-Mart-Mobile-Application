@@ -199,7 +199,7 @@ export default function Cart({navigation}) {
                       removeOrder();
                     }}>
                     <View>
-                      <Icon name="delete-outline" size={35} color="#054f4f" />
+                      <Icon name="delete-outline" size={35} color="#1C75BC" />
                     </View>
                   </TouchableOpacity>
                 </View>

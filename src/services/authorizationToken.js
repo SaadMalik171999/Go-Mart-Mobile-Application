@@ -13,6 +13,8 @@ const getToken = async () => {
         const token = await AsyncStorage.getItem('token')
         if (token !== null) {
             return token
+        }else {
+            return null
         }
     } catch (error) {
         console.log(error)
@@ -25,6 +27,32 @@ const removeToken = async (value) => {
         console.log(error)
     }
 }
+const storeUser = async (value) => {
+    try {
+        await AsyncStorage.setItem('user', JSON.stringify(value))
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-export { storeToken, getToken, removeToken }
+const getUser = async () => {
+    try {
+        const user = await AsyncStorage.getItem('user')
+        if (user !== null) {
+            return JSON.parse(user)
+        }else {
+            return null
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+const removeUser = async () => {
+    try {
+        await AsyncStorage.removeItem('user')
+    } catch (error) {
+        console.log(error)
+    }
+}
 
+export { storeToken, getToken, removeToken  , storeUser , getUser , removeUser}

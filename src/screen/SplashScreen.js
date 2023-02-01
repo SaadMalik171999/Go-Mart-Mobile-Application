@@ -1,30 +1,53 @@
 import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import TopSearchBar from '../components/TopSearchBar';
 import AppStatusBar from '../components/AppStatusBar';
 import {useNavigation} from '@react-navigation/native';
-import {getToken} from '../services/authorizationToken';
+import {getToken, getUser} from '../services/authorizationToken';
+import {baseURl} from '../utils/base_URL';
+import {useDispatch, useSelector} from 'react-redux';
+import {useLoggedInUserQuery} from '../services/userAuthentication';
+import axios from 'axios';
+import {setUserInformation} from '../features/api/userReducerSlice';
 
 export default function SplashScreen() {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
   performTimeConsumingTask = async () => {};
 
   useEffect(() => {
     getUserDetails();
   }, []);
 
+  // getUserDetails = async () => {
+  //   let screen;
+  //   const token = await getToken();
+  //   if (token) {
+  //     screen = 'SideDrawer';
+  //   } else {
+  //     screen = 'Login';
+  //   }
+  //   console.log(token);
+  //   setTimeout(() => {
+  //     navigation.navigate(screen);
+  //   }, 3000);
+  // };
+
   getUserDetails = async () => {
     let screen;
     const token = await getToken();
     if (token) {
+      const user = await getUser();
+      console.log(user);
+      dispatch(setUserInformation({name: user?.fullName, email: user?.email}));
       screen = 'SideDrawer';
     } else {
       screen = 'Login';
     }
     console.log(token);
+
     setTimeout(() => {
       navigation.navigate(screen);
     }, 3000);
@@ -59,6 +82,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
     // animation: 'bounceIn 0.6s forwards'
-
   },
 });
